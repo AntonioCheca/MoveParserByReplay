@@ -1,0 +1,4 @@
+/.idea
+/data/*
+/.pytest_cache
+/move_parser_by_replay.egg-info
