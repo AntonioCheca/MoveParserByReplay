@@ -94,9 +94,9 @@ class RegionSelector:
             # Display the image with all elements
             cv2.imshow(self.window_name, temp_img)
 
-    def run(self):
+    def run(self, time_seconds=2):
         """Main method to run the region selector"""
-        if not self.select_frame():
+        if not self.select_frame(time_seconds):
             return
 
         # Create window and set mouse callback
@@ -153,7 +153,7 @@ def main():
 
     selector = RegionSelector(args.video_path)
     selector.select_frame(args.time)
-    selector.run()
+    selector.run(args.time)
 
 
 if __name__ == "__main__":

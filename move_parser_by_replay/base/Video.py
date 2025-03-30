@@ -57,6 +57,9 @@ class Video:
                 yield Frame(frame_data, frame_number)
                 frame_number += 1
 
+    def get_frame_count(self) -> int:
+        return self.frame_count
+
     def __del__(self):
         if hasattr(self, 'capture'):
             self.capture.release()

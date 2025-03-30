@@ -21,3 +21,6 @@ class TemplateImage:
 
     def get_image(self) -> np.ndarray:
         return self.image
+
+    def __repr__(self):
+        return self.name

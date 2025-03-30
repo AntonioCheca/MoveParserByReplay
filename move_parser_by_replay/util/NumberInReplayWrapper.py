@@ -1,4 +1,4 @@
-from typing import List, Dict
+from typing import List, Dict, Tuple
 from move_parser_by_replay.base.Frame import Frame
 from move_parser_by_replay.base.templates.Number import Number
 from move_parser_by_replay.util.OpenCVWrapper import OpenCVWrapper
@@ -6,7 +6,7 @@ from move_parser_by_replay.util.OpenCVWrapper import OpenCVWrapper
 
 class NumberInReplayWrapper:
     @staticmethod
-    def search_numbers_in_image(image: Frame, numbers: Dict[str, Number]) -> List[int]:
+    def search_numbers_in_image(image: Frame, numbers: Dict[str, Number]) -> List[Tuple[int, Tuple[int, int]]]:
         image_data = image.get_image_data()
         match_positions = []
 
@@ -17,6 +17,7 @@ class NumberInReplayWrapper:
             for match in matches:
                 match_positions.append((match[0], match[1], number_value))
 
+        # Sort by Y (rows first), then by X (columns within each row)
         match_positions.sort(key=lambda pos: (pos[1], pos[0]))
 
         grouped_numbers = []
@@ -27,7 +28,7 @@ class NumberInReplayWrapper:
 
         for i, (x, y, value) in enumerate(match_positions):
             if not current_group:
-                current_group.append((x, value))
+                current_group.append((x, y, value))
                 continue
 
             last_x, last_y, last_value = match_positions[i - 1]
@@ -35,12 +36,16 @@ class NumberInReplayWrapper:
             if abs(y - last_y) <= y_threshold and abs(x - last_x) <= min_x_threshold:
                 continue
             elif abs(x - last_x) <= max_x_threshold:
-                current_group.append((x, value))
+                current_group.append((x, y, value))
             else:
-                grouped_numbers.append("".join(v for _, v in sorted(current_group)))
-                current_group = [(x, value)]
+                number_str = "".join(v for _, _, v in sorted(current_group))
+                leftmost_x, leftmost_y, _ = min(current_group, key=lambda pos: pos[0])
+                grouped_numbers.append((int(number_str), (leftmost_x, leftmost_y)))
+                current_group = [(x, y, value)]
 
         if current_group:
-            grouped_numbers.append("".join(v for _, v in sorted(current_group)))
+            number_str = "".join(v for _, _, v in sorted(current_group))
+            leftmost_x, leftmost_y, _ = min(current_group, key=lambda pos: pos[0])
+            grouped_numbers.append((int(number_str), (leftmost_x, leftmost_y)))
 
-        return [int(num) for num in grouped_numbers]
+        return grouped_numbers
