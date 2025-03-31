@@ -1,3 +1,5 @@
+from typing import Self
+
 from move_parser_by_replay.base.templates.Direction import Direction
 from move_parser_by_replay.base.templates.ListOfButtons import ListOfButtons
 from move_parser_by_replay.observers.input_display.LikelihoodMapForObservation import LikelihoodMapForObservation
@@ -29,3 +31,12 @@ class InputDisplayObservationRow:
 
     def add_direction_pressed_observation(self, direction_pressed: Direction, weight: int = 1) -> None:
         self.direction_pressed_observed.add_observation(direction_pressed, weight)
+
+    def __eq__(self, other: Self) -> bool:
+        return (self.frames_pressed_observed, self.direction_pressed_observed, self.buttons_pressed_observed,
+                self.is_empty) == (
+        other.frames_pressed_observed, other.direction_pressed_observed, other.buttons_pressed_observed, other.is_empty)
+
+    def __hash__(self) -> int:
+        return hash((self.frames_pressed_observed, self.direction_pressed_observed, self.buttons_pressed_observed,
+                     self.is_empty))

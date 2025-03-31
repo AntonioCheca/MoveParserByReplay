@@ -59,7 +59,8 @@ class InputDisplayObservation:
             mapped_row = self.map_y_from_position_to_row_key(number_recognised.get_position().get_y())
 
             number = number_recognised.get_number()
-            self.observation_rows_by_player[player][mapped_row].add_frames_pressed_observation(number)
+            if 0 <= number <= 99:
+                self.observation_rows_by_player[player][mapped_row].add_frames_pressed_observation(number)
 
     def get_templates_grouped_by_row(self, list_of_buttons_recognised) -> Dict[int, List[TemplateImage]]:
         buttons_by_row: Dict[int, List[TemplateImage]] = {}

@@ -1,3 +1,5 @@
+from typing import Self
+
 import cv2
 import os
 
@@ -24,3 +26,9 @@ class TemplateImage:
 
     def __repr__(self):
         return self.name
+
+    def __hash__(self) -> int:
+        return hash(self.name)
+
+    def __eq__(self, other: Self) -> bool:
+        return self.name == other.name

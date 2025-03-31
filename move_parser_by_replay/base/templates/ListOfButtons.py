@@ -15,7 +15,13 @@ class ListOfButtons:
         return self.buttons == other.buttons
 
     def __hash__(self):
-        return hash(self.buttons)  # Hash the tuple
+        return hash(self.get_unique_identifier())
 
     def __repr__(self):
-        return f"ListOfButtons({self.buttons})"
+        unique_identifier = self.get_unique_identifier()
+        return f"ListOfButtons({unique_identifier})"
+
+    def get_unique_identifier(self) -> str:
+        list_of_button_names = [str(button) for button in self.buttons]
+        unique_identifier = ', '.join(sorted(list_of_button_names))
+        return unique_identifier
