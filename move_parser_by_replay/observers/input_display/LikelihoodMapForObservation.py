@@ -50,6 +50,18 @@ class LikelihoodMapForObservation(Generic[T]):
 
         return likelihood_map
 
+    def get_probability_this_object_is_the_same_than(self, other: Self) -> float:
+        total_max_weight = self.total_weight * other.total_weight
+        weight_for_being_same_object = 0
+        for key in self.weights_for_observations:
+            if key in other.weights_for_observations:
+                weight_for_being_same_object += self.weights_for_observations[key] * other.weights_for_observations[key]
+
+        weight_for_being_same_object += self.unknown_weight * other.total_weight
+        weight_for_being_same_object += self.total_weight * other.unknown_weight
+
+        return weight_for_being_same_object / total_max_weight
+
     def __eq__(self, other: Self) -> bool:
         return self.weights_for_observations == other.weights_for_observations \
             and self.total_weight == other.total_weight and self.unknown_weight == other.unknown_weight
@@ -58,6 +70,38 @@ class LikelihoodMapForObservation(Generic[T]):
         dict_with_keys_str = {}
         for key in self.weights_for_observations:
             dict_with_keys_str[str(key)] = self.weights_for_observations[key]
-            
+
         hashed_dict = json.dumps(dict_with_keys_str, sort_keys=True)
         return hash((hashed_dict, self.total_weight, self.unknown_weight))
+
+    def get_weight_for_specific_value(self, value: T) -> int:
+        return self.weights_for_observations[value] if value in self.weights_for_observations else self.unknown_weight
+
+    def get_most_likely_possibility(self) -> Optional[T]:
+        most_likely_value = None
+        highest_value = 0
+
+        for key in self.weights_for_observations:
+            current_value = self.weights_for_observations[key]
+            if current_value > highest_value:
+                highest_value = current_value
+                most_likely_value = key
+
+        return most_likely_value
+
+    def get_best_possibility_according_to_second_map(self, second_map: Self) -> T:
+        most_likely_value = None
+        highest_weight = 0
+
+        all_values = set(self.weights_for_observations.keys()) | set(second_map.weights_for_observations)
+
+        for key in all_values:
+            weight_for_first_map = self.get_weight_for_specific_value(key)
+            weight_for_second_map = second_map.get_weight_for_specific_value(key)
+            current_weight = weight_for_first_map * weight_for_second_map
+
+            if current_weight > highest_weight:
+                highest_weight = current_weight
+                most_likely_value = key
+
+        return most_likely_value

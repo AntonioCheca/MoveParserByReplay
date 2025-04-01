@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Self, Optional
 
 import cv2
 import os
@@ -30,5 +30,7 @@ class TemplateImage:
     def __hash__(self) -> int:
         return hash(self.name)
 
-    def __eq__(self, other: Self) -> bool:
+    def __eq__(self, other: Optional[Self]) -> bool:
+        if other is None:
+            return False
         return self.name == other.name
