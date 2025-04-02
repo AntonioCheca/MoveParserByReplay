@@ -114,7 +114,9 @@ class InputDisplayObservation:
             first_row = self.observation_rows_by_player[player][row_key]
             row_to_compare = other_observation.observation_rows_by_player[player][row_key + slided_rows_number]
             probability = first_row.get_probability_this_is_same_row_than(row_to_compare)
-            if probability >= self.SUCCESS_THRESHOLD_FOR_COMPARING_ROWS:
+            if probability >= self.SUCCESS_THRESHOLD_FOR_COMPARING_ROWS and \
+                    not first_row.is_likely_empty() and \
+                    not row_to_compare.is_likely_empty():
                 success_count += 1
 
         return success_count >= overlapped_rows // 2

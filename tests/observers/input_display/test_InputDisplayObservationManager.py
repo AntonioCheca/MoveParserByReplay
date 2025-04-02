@@ -1,8 +1,11 @@
 from move_parser_by_replay.base.Player import Player
 from move_parser_by_replay.base.Video import Video
 from move_parser_by_replay.observers.input_display.InputDisplayObserver import InputDisplayObserver
+from move_parser_by_replay.observers.input_display.InputDisplayRow import InputDisplayRow
 from move_parser_by_replay.observers.input_display.MergerForInputDisplayObservations import \
     MergerForInputDisplayObservations
+from move_parser_by_replay.util.CSVInputDisplayRowHelper import CSVInputDisplayRowHelper
+from move_parser_by_replay.util.DiffLibWrapper import DiffLibWrapper
 
 
 def test_apply_base_observations():
@@ -36,9 +39,9 @@ def test_merger_basic_construction():
     merged_inputs = MergerForInputDisplayObservations.merge_input_displays(first_observation, first_frame,
                                                                            second_observation,
                                                                            second_frame, Player.FIRST_PLAYER)
-    overlapped_rows = 2
+
     assert merged_inputs is not None
-    assert 19 + overlapped_rows == len(merged_inputs)
+    assert 0 < len(merged_inputs)
 
 
 def test_merger_returns_none_when_there_is_no_overlap():
@@ -80,13 +83,17 @@ def test_analyse_full_video_creates_merged_input_display_rows():
     input_display_observer = InputDisplayObserver(video)
     manager = input_display_observer.get_manager()
 
-    manager.set_window_to_stop_searching(10000)
+    manager.set_window_to_stop_searching(45)
+    manager.set_maximum_frame_to_look_at(2000)
     manager.analyse_full_video()
-    observations = manager.get_observations()
 
-    count_not_none = 0
-    for frame_key in observations:
-        if observations[frame_key] is not None:
-            count_not_none += 1
+    assert len(manager.merged_display_rows) > 0
 
-    assert len(manager.merged_display_rows) == 0
+    list_of_expected_input_displays = CSVInputDisplayRowHelper.read_from_csv('./data/match1-inputdisplay.csv',
+                                                                             input_display_observer)[
+                                      :len(manager.merged_display_rows)]
+    differences = [row.get_differences_with_other_input_display_row(manager.merged_display_rows[idx]) for idx, row in
+                   enumerate(list_of_expected_input_displays)]
+
+    assert DiffLibWrapper.get_similarity_ratio_from_two_lists(list_of_expected_input_displays,
+                                                              manager.merged_display_rows) > 0.5

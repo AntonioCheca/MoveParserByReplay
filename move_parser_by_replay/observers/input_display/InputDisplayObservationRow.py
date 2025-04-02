@@ -19,7 +19,7 @@ class InputDisplayObservationRow:
         self.frames_pressed_observed = LikelihoodMapForObservation.get_new_likelihood_map_if_value_is_none(
             frames_pressed_observed)
         self.buttons_pressed_observed = LikelihoodMapForObservation.get_new_likelihood_map_if_value_is_none(
-            buttons_pressed_observed)
+            buttons_pressed_observed, default_value=ListOfButtons([]))
         self.direction_pressed_observed = LikelihoodMapForObservation.get_new_likelihood_map_if_value_is_none(
             direction_pressed_observed)
         self.is_empty = LikelihoodMapForObservation.get_new_likelihood_map_if_value_is_none(is_empty)
@@ -75,3 +75,7 @@ class InputDisplayObservationRow:
     def __hash__(self) -> int:
         return hash((self.frames_pressed_observed, self.direction_pressed_observed, self.buttons_pressed_observed,
                      self.is_empty))
+
+    def is_likely_empty(self) -> bool:
+        return self.frames_pressed_observed.get_most_likely_possibility() is None and \
+            self.direction_pressed_observed.get_most_likely_possibility() is None

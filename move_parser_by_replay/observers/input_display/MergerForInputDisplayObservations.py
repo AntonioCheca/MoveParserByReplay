@@ -36,7 +36,7 @@ class MergerForInputDisplayObservations:
         overlapped_rows_number = max_rows - slided_rows - 1
         list_of_input_rows: List[InputDisplayRow] = []
 
-        keys_first_no_overlap = list(range(max_rows, overlapped_rows_number, -1))
+        keys_first_no_overlap = list(range(max_rows, overlapped_rows_number + 1, -1))
         first_input_rows_without_overlap = first_input.get_observation_rows_by_list_of_ints_and_player(player,
                                                                                                        keys_first_no_overlap)
         keys_second_no_overlap = list(range(1 + slided_rows, 1, -1))

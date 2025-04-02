@@ -10,7 +10,7 @@ class LikelihoodMapForObservation(Generic[T]):
     unknown_weight: int
 
     def __init__(self, likelihood_for_possibilities: Dict[Optional[T], int] = None,
-                 total_weight: Optional[int] = None):
+                 total_weight: Optional[int] = None, default_value: Optional[T] = None):
         if likelihood_for_possibilities is not None:
             self.weights_for_observations = likelihood_for_possibilities
 
@@ -21,7 +21,7 @@ class LikelihoodMapForObservation(Generic[T]):
             self.total_weight = 0
             self.unknown_weight = 0
             self.weights_for_observations = {}
-            self.add_observation(None)
+            self.add_observation(default_value)
 
     def get_dictionary_of_possibilities(self) -> Dict[Optional[T], int]:
         return self.weights_for_observations
@@ -44,9 +44,9 @@ class LikelihoodMapForObservation(Generic[T]):
         return self.weights_for_observations[observation] / self.total_weight
 
     @classmethod
-    def get_new_likelihood_map_if_value_is_none(cls, likelihood_map: Self) -> Self:
+    def get_new_likelihood_map_if_value_is_none(cls, likelihood_map: Self, default_value: Optional[T] = None) -> Self:
         if likelihood_map is None:
-            return cls()
+            return cls(default_value=default_value)
 
         return likelihood_map
 
