@@ -1,15 +1,17 @@
 import os
-from typing import Dict, List
+from typing import Dict, List, Type
 
 from move_parser_by_replay.base.Video import Video
 from move_parser_by_replay.base.templates.Button import Button
 from move_parser_by_replay.base.templates.Direction import Direction
 from move_parser_by_replay.base.templates.Number import Number
+from move_parser_by_replay.base.templates.TemplateImage import TemplateImage
+from move_parser_by_replay.observers.AbstractObserver import AbstractObserver
 from move_parser_by_replay.observers.input_display.InputDisplayObservationManager import InputDisplayObservationManager
 from move_parser_by_replay.observers.input_display.InputDisplayRow import InputDisplayRow
 
 
-class InputDisplayObserver:
+class InputDisplayObserver(AbstractObserver):
     TEMPLATES_FOR_INPUTS = './data/input_display/'
     TEMPLATES_FOR_NUMBERS = './data/numbers/'
 
@@ -28,32 +30,13 @@ class InputDisplayObserver:
                                                                     self.get_directions(), video)
 
     def initialise_directions(self) -> None:
-        self.directions = {}
-        self.load_templates_from_folder("Direction")
+        self.directions = self.load_templates_from_folder(self.TEMPLATES_FOR_INPUTS, Direction)
 
     def initialise_buttons(self) -> None:
-        self.buttons = {}
-        self.load_templates_from_folder("Button")
+        self.buttons = self.load_templates_from_folder(self.TEMPLATES_FOR_INPUTS, Button)
 
     def initialise_numbers(self) -> None:
-        self.numbers = {}
-        self.load_templates_from_folder("Number", self.TEMPLATES_FOR_NUMBERS)
-
-    def load_templates_from_folder(self, item_type: str, folder: str = TEMPLATES_FOR_INPUTS) -> None:
-        if not os.path.exists(folder):
-            raise FileNotFoundError(f"Templates directory not found: {folder}")
-
-        for file_name in os.listdir(folder):
-            file_path = os.path.join(folder, file_name)
-            base_name = os.path.splitext(file_name)[0]
-
-            if os.path.isfile(file_path):
-                if item_type == "Direction" and "Direction" in file_name:
-                    self.directions[base_name] = Direction(file_path)
-                elif item_type == "Button" and "Direction" not in file_name:
-                    self.buttons[base_name] = Button(file_path)
-                elif item_type == "Number":
-                    self.numbers[base_name] = Number(file_path)
+        self.numbers = self.load_templates_from_folder(self.TEMPLATES_FOR_NUMBERS, Number)
 
     def get_buttons(self) -> Dict[str, Button]:
         return self.buttons
