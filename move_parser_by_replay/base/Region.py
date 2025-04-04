@@ -21,3 +21,9 @@ class Region:
 
     def get_bottom_y(self) -> int:
         return self.y + self.height
+
+    def get_width(self) -> int:
+        return self.width
+
+    def get_height(self) -> int:
+        return self.height

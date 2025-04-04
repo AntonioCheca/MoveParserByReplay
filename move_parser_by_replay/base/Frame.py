@@ -1,6 +1,8 @@
 import numpy as np
 import cv2
 from typing import Optional, Self
+
+from move_parser_by_replay.base.Position import Position
 from move_parser_by_replay.base.Region import Region
 
 
@@ -26,6 +28,9 @@ class Frame:
 
     def get_image_data(self) -> np.ndarray:
         return self.image_data
+
+    def get_specific_point(self, position: Position) -> np.ndarray:
+        return self.image_data[position.get_y(), position.get_x()]
 
     def get_subregion(self, region: Region) -> Self:
         x1 = max(0, region.get_left_x())

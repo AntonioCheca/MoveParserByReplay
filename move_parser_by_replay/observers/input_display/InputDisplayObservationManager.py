@@ -6,7 +6,6 @@ from move_parser_by_replay.base.Player import Player
 from move_parser_by_replay.base.Video import Video
 from move_parser_by_replay.base.templates.Button import Button
 from move_parser_by_replay.base.templates.Direction import Direction
-from move_parser_by_replay.base.templates.ListOfButtons import ListOfButtons
 from move_parser_by_replay.base.templates.Number import Number
 from move_parser_by_replay.observers.input_display.InputDisplayObservation import InputDisplayObservation
 from move_parser_by_replay.observers.input_display.InputDisplayRow import InputDisplayRow

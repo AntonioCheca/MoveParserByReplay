@@ -2,7 +2,6 @@ from typing import Dict
 
 from move_parser_by_replay.base.Frame import Frame
 from move_parser_by_replay.base.Player import Player
-from move_parser_by_replay.base.Region import Region
 from move_parser_by_replay.base.Video import Video
 from move_parser_by_replay.base.templates.Character import Character
 from move_parser_by_replay.observers.AbstractObserver import AbstractObserver

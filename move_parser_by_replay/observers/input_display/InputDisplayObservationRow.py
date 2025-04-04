@@ -3,7 +3,7 @@ from typing import Self
 from move_parser_by_replay.base.templates.Direction import Direction
 from move_parser_by_replay.base.templates.ListOfButtons import ListOfButtons
 from move_parser_by_replay.observers.input_display.InputDisplayRow import InputDisplayRow
-from move_parser_by_replay.observers.input_display.LikelihoodMapForObservation import LikelihoodMapForObservation
+from move_parser_by_replay.observers.LikelihoodMapForObservation import LikelihoodMapForObservation
 
 
 class InputDisplayObservationRow:
