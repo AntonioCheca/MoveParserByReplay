@@ -17,12 +17,12 @@ class ColorFrameMeter:
         StateFrameMeterEnum.RECOVERY_PAST: (134, 86, 5),
         StateFrameMeterEnum.ACTIVE_PAST: (73, 12, 136),
         StateFrameMeterEnum.STARTUP_PAST: (108, 146, 11),
-        StateFrameMeterEnum.JUMP_PAST: (183, 195, 57),
+        StateFrameMeterEnum.JUMP_OR_DASH_PAST: (183, 195, 57),
         StateFrameMeterEnum.HIT_STUCK_PAST: (37, 192, 185),
         StateFrameMeterEnum.FULL_INVULNERABILITY_1_PAST: (176, 176, 176),
         StateFrameMeterEnum.FULL_INVULNERABILITY_2_PAST: (144, 144, 144),
         StateFrameMeterEnum.NOTHING: (27, 24, 25),
-        StateFrameMeterEnum.JUMP: (249, 255, 82),
+        StateFrameMeterEnum.JUMP_OR_DASH: (249, 255, 82),
         StateFrameMeterEnum.ARMOR_PARRY: (106, 16, 86),
         # StateFrameMeter.STRIKE_INVULNERABILITY_1: (92, 23, 185),
         StateFrameMeterEnum.STRIKE_INVULNERABILITY_2: (251, 209, 255),
@@ -31,7 +31,7 @@ class ColorFrameMeter:
         StateFrameMeterEnum.ARMOR_PARRY_PAST: (76, 8, 60),
     }
 
-    THRESHOLD_FOR_DISTANCE = 500
+    THRESHOLD_FOR_DISTANCE = 100
 
     _color_cache = {}
     _states_array = None

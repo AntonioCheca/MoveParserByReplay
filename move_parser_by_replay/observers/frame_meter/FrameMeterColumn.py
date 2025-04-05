@@ -12,12 +12,27 @@ class FrameMeterColumn:
         self.p2_state = p2_state
 
     def is_past(self) -> bool:
-        return self.p1_state is not None and self.p1_state.is_from_the_past() and \
-            self.p2_state is not None and self.p2_state.is_from_the_past()
+        is_p1_from_past = self.is_specific_state_from_past(self.p1_state)
+        is_p2_from_past = self.is_specific_state_from_past(self.p2_state)
+        if not is_p1_from_past and not is_p2_from_past:
+            return False
+
+        if is_p1_from_past:
+            return is_p2_from_past or self.is_specific_state_unknown_or_nothing(self.p2_state)
+
+        return self.is_specific_state_unknown_or_nothing(self.p1_state)
 
     def is_unknown_or_nothing(self) -> bool:
-        return (self.p1_state is None or self.p1_state == StateFrameMeterEnum.NOTHING) and (
-                self.p2_state is None or self.p2_state == StateFrameMeterEnum.NOTHING)
+        return self.is_specific_state_unknown_or_nothing(self.p1_state) and \
+            self.is_specific_state_unknown_or_nothing(self.p2_state)
+
+    @staticmethod
+    def is_specific_state_from_past(state: Optional[StateFrameMeterEnum]) -> bool:
+        return state is not None and state.is_from_the_past()
+
+    @staticmethod
+    def is_specific_state_unknown_or_nothing(state: Optional[StateFrameMeterEnum]) -> bool:
+        return state is None or state == StateFrameMeterEnum.NOTHING
 
     def __hash__(self):
         return hash((self.p1_state, self.p2_state))

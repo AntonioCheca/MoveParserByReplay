@@ -9,8 +9,8 @@ class MergerForFrameMeterObservation:
     THRESHOLD_TO_START_CHECKING_OVERLAPS = 40
 
     @staticmethod
-    def merge_input_displays(first_observation: FrameMeterObservation, first_frame: int,
-                             second_observation: FrameMeterObservation, second_frame: int) -> \
+    def merge_frame_meters(first_observation: FrameMeterObservation, first_frame: int,
+                           second_observation: FrameMeterObservation, second_frame: int) -> \
             Optional[List[FrameMeterColumn]]:
         if second_frame - first_frame > MergerForFrameMeterObservation.THRESHOLD_TO_START_CHECKING_OVERLAPS:
             return None

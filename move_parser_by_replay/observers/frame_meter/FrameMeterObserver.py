@@ -50,14 +50,13 @@ class FrameMeterObserver(AbstractSequentialSearchObserver):
 
         new_observation = FrameMeterObservation.fill_from_frame_and_positions(frame,
                                                                               self.positions_for_frame_meter_rectangles)
-        new_observation.clean_nothing_frames_from_tail()
-        new_observation.clean_past_frames()  # TODO Apply properly a transformation to change past
+        new_observation.clean_all_past_and_nothing_frames()
         self.observations[frame_number] = new_observation
 
     def get_saved_observation_in_frame(self, frame_number: int) -> FrameMeterObservation:
         return self.observations[frame_number]
 
     def get_merge_observation_in_two_frames(self, first_frame: int, second_frame: int) -> List[FrameMeterColumn]:
-        return MergerForFrameMeterObservation.merge_input_displays(
+        return MergerForFrameMeterObservation.merge_frame_meters(
             self.observations[first_frame], first_frame, self.observations[second_frame], second_frame
         )

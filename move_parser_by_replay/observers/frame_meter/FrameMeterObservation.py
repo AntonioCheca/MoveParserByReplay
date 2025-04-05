@@ -49,6 +49,11 @@ class FrameMeterObservation:
     def clean_past_frames(self) -> None:
         self.clean_continuous_columns_not_following_boolean_function(lambda column: column.is_past())
 
+    def clean_all_past_and_nothing_frames(self) -> None:
+        self.clean_continuous_columns_not_following_boolean_function(
+            lambda column: column.is_past() or column.is_unknown_or_nothing()
+        )
+
     def clean_continuous_columns_not_following_boolean_function(self,
                                                                 boolean_function: Callable[
                                                                     [FrameMeterColumn],
