@@ -1,6 +1,6 @@
 import cv2
 import os
-from typing import Iterator, Optional
+from typing import Iterator, Optional, List, Dict
 from move_parser_by_replay.base.Frame import Frame
 
 
@@ -56,6 +56,20 @@ class Video:
             if still_reading:
                 yield Frame(frame_data, frame_number)
                 frame_number += 1
+
+    def get_frames_from_static_list(self, needed_frames) -> Dict[int, Frame]:
+        self.capture.set(cv2.CAP_PROP_POS_FRAMES, 0)
+
+        frame_number = 0
+        still_reading = True
+        dict_of_frames = {}
+        while still_reading:
+            still_reading, frame_data = self.capture.read()
+
+            if still_reading and frame_number in needed_frames:
+                dict_of_frames[frame_number] = Frame(frame_data, frame_number)
+            frame_number += 1
+        return dict_of_frames
 
     def get_frame_count(self) -> int:
         return self.frame_count

@@ -42,7 +42,9 @@ class OpenCVWrapper:
 
     @staticmethod
     def show_image(image) -> None:
-        cv2.imshow(f"Image", image)
+        image_name = "Image"
+        cv2.imshow(image_name, image)
+        cv2.moveWindow(image_name, 1000, 800)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 

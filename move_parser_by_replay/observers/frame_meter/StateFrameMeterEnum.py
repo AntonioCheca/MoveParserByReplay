@@ -28,3 +28,6 @@ class StateFrameMeterEnum(Enum):
 
     def is_from_the_past(self) -> bool:
         return self.value[-6:] == '(Past)'
+
+    def __hash__(self):
+        return hash(self.value)

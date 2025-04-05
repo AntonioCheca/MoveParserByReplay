@@ -1,13 +1,13 @@
 from move_parser_by_replay.base.Video import Video
 from move_parser_by_replay.base.templates.ListOfButtons import ListOfButtons
 from move_parser_by_replay.observers.input_display.InputDisplayObservationRow import InputDisplayObservationRow
-from move_parser_by_replay.observers.input_display.InputDisplayObserver import InputDisplayObserver
+from move_parser_by_replay.observers.input_display.InputDisplayObserver import InputDisplayTemplateObserver
 from move_parser_by_replay.observers.input_display.InputDisplayRow import InputDisplayRow
 from move_parser_by_replay.util.DiffLibWrapper import DiffLibWrapper
 
 
 def get_example_input_display_observation_row() -> InputDisplayObservationRow:
-    observer = InputDisplayObserver(Video('./data/match1.mkv'))
+    observer = InputDisplayTemplateObserver(Video('./data/match1.mkv'))
 
     input_display_row = InputDisplayObservationRow()
     input_display_row.add_frames_pressed_observation(56, 99)
@@ -49,7 +49,7 @@ def test_merge_sequences_on_text_with_noise_in_overlap():
 
 
 def test_complex_merge_with_input_display_rows():
-    observer = InputDisplayObserver(Video('./data/match1.mkv'))
+    observer = InputDisplayTemplateObserver(Video('./data/match1.mkv'))
     buttons = observer.get_buttons()
     directions = observer.get_directions()
 
@@ -73,4 +73,3 @@ def test_complex_merge_with_input_display_rows():
     expected_result.append(InputDisplayRow(left, ListOfButtons([buttons['HeavyKick']]), None))
 
     assert expected_result == DiffLibWrapper.merge_sequences(first_list, second_list)
-

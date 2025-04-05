@@ -1,17 +1,15 @@
-import os
-from typing import Dict, List, Type
+from typing import Dict, List
 
 from move_parser_by_replay.base.Video import Video
 from move_parser_by_replay.base.templates.Button import Button
 from move_parser_by_replay.base.templates.Direction import Direction
 from move_parser_by_replay.base.templates.Number import Number
-from move_parser_by_replay.base.templates.TemplateImage import TemplateImage
-from move_parser_by_replay.observers.AbstractObserver import AbstractObserver
+from move_parser_by_replay.observers.AbstractTemplateObserver import AbstractTemplateObserver
 from move_parser_by_replay.observers.input_display.InputDisplayObservationManager import InputDisplayObservationManager
 from move_parser_by_replay.observers.input_display.InputDisplayRow import InputDisplayRow
 
 
-class InputDisplayObserver(AbstractObserver):
+class InputDisplayTemplateObserver(AbstractTemplateObserver):
     TEMPLATES_FOR_INPUTS = './data/input_display/'
     TEMPLATES_FOR_NUMBERS = './data/numbers/'
 

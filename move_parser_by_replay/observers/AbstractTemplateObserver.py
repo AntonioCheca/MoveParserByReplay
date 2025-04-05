@@ -4,7 +4,7 @@ import os
 from typing import Type, Dict
 
 
-class AbstractObserver(ABC):
+class AbstractTemplateObserver(ABC):
     @staticmethod
     def load_templates_from_folder(folder: str, class_from_template_image: Type) -> Dict:
         if not os.path.exists(folder):

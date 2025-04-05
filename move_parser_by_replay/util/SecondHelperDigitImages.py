@@ -5,7 +5,7 @@ from pytesseract import pytesseract
 
 from move_parser_by_replay.base.Frame import Frame
 from move_parser_by_replay.base.Region import Region
-from move_parser_by_replay.observers.input_display.InputDisplayObserver import InputDisplayObserver
+from move_parser_by_replay.observers.input_display.InputDisplayObserver import InputDisplayTemplateObserver
 from move_parser_by_replay.util.NumberInReplayWrapper import NumberInReplayWrapper
 
 
@@ -112,7 +112,7 @@ video_path = "./data/match1.mkv"
 for i in range(50):
     frame_position = 650 + i
     region = (50, 227, 35, 34)  # Example region of interest
-    input_display = InputDisplayObserver(1, Region(*region))
+    input_display = InputDisplayTemplateObserver(1, Region(*region))
 
     # Create the service instance
     service = TextDetectionService(video_path, frame_position, region)

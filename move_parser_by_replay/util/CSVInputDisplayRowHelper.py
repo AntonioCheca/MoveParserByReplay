@@ -3,7 +3,7 @@ from typing import List
 
 from move_parser_by_replay.base.templates.Button import Button
 from move_parser_by_replay.base.templates.ListOfButtons import ListOfButtons
-from move_parser_by_replay.observers.input_display.InputDisplayObserver import InputDisplayObserver
+from move_parser_by_replay.observers.input_display.InputDisplayObserver import InputDisplayTemplateObserver
 from move_parser_by_replay.observers.input_display.InputDisplayRow import InputDisplayRow
 
 
@@ -11,7 +11,8 @@ class CSVInputDisplayRowHelper:
     FINISH_ROUND_TAG = 'FINISH_ROUND'
 
     @classmethod
-    def read_from_csv(cls, csv_path: str, input_display_observer: InputDisplayObserver) -> List[InputDisplayRow]:
+    def read_from_csv(cls, csv_path: str, input_display_observer: InputDisplayTemplateObserver) -> List[
+        InputDisplayRow]:
         rows = []
 
         with open(csv_path, 'r') as csv_file:

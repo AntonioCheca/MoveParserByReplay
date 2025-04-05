@@ -4,11 +4,11 @@ from move_parser_by_replay.base.Frame import Frame
 from move_parser_by_replay.base.Player import Player
 from move_parser_by_replay.base.Video import Video
 from move_parser_by_replay.base.templates.Character import Character
-from move_parser_by_replay.observers.AbstractObserver import AbstractObserver
+from move_parser_by_replay.observers.AbstractTemplateObserver import AbstractTemplateObserver
 from move_parser_by_replay.util.OpenCVWrapper import OpenCVWrapper
 
 
-class CharacterObserver(AbstractObserver):
+class CharacterTemplateObserver(AbstractTemplateObserver):
     TEMPLATES_FOR_CHARACTERS = './data/characters/'
     GAP_BETWEEN_FRAMES_FOR_LOOKUP = 300
 

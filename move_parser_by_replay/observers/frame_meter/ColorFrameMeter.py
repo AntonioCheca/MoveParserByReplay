@@ -1,4 +1,5 @@
 from typing import Tuple, Self, Dict, Optional
+import numpy as np
 
 from move_parser_by_replay.observers.frame_meter.StateFrameMeterEnum import StateFrameMeterEnum
 
@@ -32,16 +33,43 @@ class ColorFrameMeter:
 
     THRESHOLD_FOR_DISTANCE = 500
 
+    _color_cache = {}
+    _states_array = None
+    _colors_array = None
+    _initialized = False
+
     color: Tuple[int, int, int]
 
     def __init__(self, color: Tuple[int, int, int]):
         self.color = color
+        if not ColorFrameMeter._initialized:
+            self._initialize_color_arrays_in_numpy()
+
+    @classmethod
+    def _initialize_color_arrays_in_numpy(cls):
+        cls._states_array = list(cls.ALL_COLORS.keys())
+        cls._colors_array = np.array(list(cls.ALL_COLORS.values()))
+        cls._initialized = True
 
     def get_potential_state_frame_meter(self) -> Optional[StateFrameMeterEnum]:
-        for frame_state in self.ALL_COLORS:
-            if self.distance_with_tuple_color(self.ALL_COLORS[frame_state]) <= self.THRESHOLD_FOR_DISTANCE:
-                return frame_state
-        return None
+        color_key = self.color
+        if color_key in self._color_cache:
+            return self._color_cache[color_key]
+
+        color_array = np.array(self.color)
+        diff = self._colors_array - color_array
+        distances = np.sum(diff * diff, axis=1)
+
+        min_idx = np.argmin(distances)
+        min_distance = distances[min_idx]
+
+        if min_distance <= self.THRESHOLD_FOR_DISTANCE:
+            result = self._states_array[min_idx]
+        else:
+            result = None
+
+        self._color_cache[color_key] = result
+        return result
 
     def distance_with_another_color(self, other: Self) -> int:
         b_diff = self.color[0] - other.color[0]

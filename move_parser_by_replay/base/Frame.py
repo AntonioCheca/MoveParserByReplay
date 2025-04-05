@@ -4,6 +4,7 @@ from typing import Optional, Self
 
 from move_parser_by_replay.base.Position import Position
 from move_parser_by_replay.base.Region import Region
+from move_parser_by_replay.util.OpenCVWrapper import OpenCVWrapper
 
 
 class Frame:
@@ -41,10 +42,12 @@ class Frame:
         subregion_data = self.image_data[y1:y2, x1:x2]
         return Frame(subregion_data, self.frame_number)
 
+    def get_sub_region_around_specific_point(self, point: Position, width: int, height: int) -> Self:
+        region = Region(point.get_x() - width // 2, point.get_y() - height // 2, width, height)
+        return self.get_subregion(region)
+
     def show(self) -> None:
-        cv2.imshow(f"Frame {self.frame_number}" if self.frame_number is not None else "Frame", self.image_data)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        OpenCVWrapper.show_image(self.image_data)
 
     def get_left_region(self) -> Self:
         left_digit_width = self.width // 2
