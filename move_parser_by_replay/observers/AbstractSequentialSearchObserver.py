@@ -1,4 +1,3 @@
-import bisect
 from abc import abstractmethod, ABC
 from typing import List, Dict
 
@@ -9,6 +8,7 @@ from move_parser_by_replay.util.DiffLibWrapper import DiffLibWrapper
 
 class AbstractSequentialSearchObserver(ABC):
     DEFAULT_GAP_SIZE = 20
+    FRAMES_TO_REMOVE_FROM_TAIL_FOR_NUMBERS = 3
 
     gap_size: int
     maximum_frame_to_look_at: int
@@ -43,6 +43,10 @@ class AbstractSequentialSearchObserver(ABC):
         pass
 
     @abstractmethod
+    def get_exact_list_from_frame(self, frame_number: int):
+        pass
+
+    @abstractmethod
     def get_merge_observation_in_two_frames(self, first_frame: int, second_frame: int) -> List:
         pass
 
@@ -60,11 +64,16 @@ class AbstractSequentialSearchObserver(ABC):
 
         for frame_number in frames_to_look:
             self.apply_observations_in_frame(frame_number)
-            if frame_number != 0:
-                merged_list = self.get_merge_observation_in_two_frames(frame_number - self.gap_size, frame_number)
-                self.exact_final_list = DiffLibWrapper.merge_sequences(self.exact_final_list, merged_list)
+            # merged_list = self.get_merge_observation_in_two_frames(frame_number - self.gap_size, frame_number)
+            list_to_merge = self.get_exact_list_from_frame(frame_number)[:-self.FRAMES_TO_REMOVE_FROM_TAIL_FOR_NUMBERS]
+            self.exact_final_list[-len(list_to_merge):] = DiffLibWrapper.merge_sequences(
+                self.exact_final_list[-len(list_to_merge):], list_to_merge)
+            self.update_internal_variables_if_needed()
 
         self.clean_final_list_if_needed()
 
     def clean_final_list_if_needed(self) -> None:
+        pass
+    
+    def update_internal_variables_if_needed(self) -> None:
         pass

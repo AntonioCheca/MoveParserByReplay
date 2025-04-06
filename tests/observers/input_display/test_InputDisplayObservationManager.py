@@ -4,7 +4,7 @@ from move_parser_by_replay.observers.input_display.InputDisplayObserver import I
 from move_parser_by_replay.observers.input_display.InputDisplayRow import InputDisplayRow
 from move_parser_by_replay.observers.input_display.MergerForInputDisplayObservations import \
     MergerForInputDisplayObservations
-from move_parser_by_replay.util.CSVInputDisplayRowHelper import CSVInputDisplayRowHelper
+from move_parser_by_replay.util.CSVHelper import CSVHelper
 from move_parser_by_replay.util.DiffLibWrapper import DiffLibWrapper
 
 
@@ -90,9 +90,8 @@ def test_analyse_full_video_creates_merged_input_display_rows():
     final_list = manager.get_exact_final_list()
     assert len(final_list) > 0
 
-    list_of_expected_input_displays = CSVInputDisplayRowHelper.read_from_csv('./data/match1-inputdisplay.csv',
-                                                                             input_display_observer)[
-                                      :len(final_list)]
+    list_of_expected_input_displays = CSVHelper.read_input_display_from_csv('./data/match1-inputdisplay.csv',
+                                                                            input_display_observer)[:len(final_list)]
     differences = [row.get_differences_with_other_input_display_row(final_list[idx]) for idx, row in
                    enumerate(list_of_expected_input_displays)]
 

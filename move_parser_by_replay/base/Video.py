@@ -57,13 +57,14 @@ class Video:
                 yield Frame(frame_data, frame_number)
                 frame_number += 1
 
-    def get_frames_from_static_list(self, needed_frames) -> Dict[int, Frame]:
+    def get_frames_from_static_list(self, needed_frames: List[int]) -> Dict[int, Frame]:
         self.capture.set(cv2.CAP_PROP_POS_FRAMES, 0)
 
         frame_number = 0
         still_reading = True
         dict_of_frames = {}
-        while still_reading:
+        max_frame = max(needed_frames)
+        while still_reading and frame_number <= max_frame:
             still_reading, frame_data = self.capture.read()
 
             if still_reading and frame_number in needed_frames:

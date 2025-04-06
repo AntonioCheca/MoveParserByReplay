@@ -22,6 +22,7 @@ class ColorFrameMeter:
         StateFrameMeterEnum.FULL_INVULNERABILITY_1_PAST: (176, 176, 176),
         StateFrameMeterEnum.FULL_INVULNERABILITY_2_PAST: (144, 144, 144),
         StateFrameMeterEnum.NOTHING: (27, 24, 25),
+        StateFrameMeterEnum.NOTHING_PAST: (16, 16, 16),
         StateFrameMeterEnum.JUMP_OR_DASH: (249, 255, 82),
         StateFrameMeterEnum.ARMOR_PARRY: (106, 16, 86),
         # StateFrameMeter.STRIKE_INVULNERABILITY_1: (92, 23, 185),
@@ -31,7 +32,7 @@ class ColorFrameMeter:
         StateFrameMeterEnum.ARMOR_PARRY_PAST: (76, 8, 60),
     }
 
-    THRESHOLD_FOR_DISTANCE = 100
+    THRESHOLD_FOR_DISTANCE = 200
 
     _color_cache = {}
     _states_array = None

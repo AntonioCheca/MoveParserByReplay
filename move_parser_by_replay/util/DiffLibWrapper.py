@@ -20,6 +20,7 @@ class DiffLibWrapper:
                 merged.extend(a[i1:i2])
             elif tag == 'replace':
                 merged.extend(a[i1:i2])
+                merged.extend(b[j1:j2])
             elif tag == 'delete':
                 merged.extend(a[i1:i2])
             elif tag == 'insert':

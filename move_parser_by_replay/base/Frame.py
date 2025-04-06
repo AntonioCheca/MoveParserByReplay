@@ -1,9 +1,10 @@
 import numpy as np
 import cv2
-from typing import Optional, Self
+from typing import Optional, Self, List
 
 from move_parser_by_replay.base.Position import Position
 from move_parser_by_replay.base.Region import Region
+from move_parser_by_replay.observers.frame_meter.ColorFrameMeter import ColorFrameMeter
 from move_parser_by_replay.util.OpenCVWrapper import OpenCVWrapper
 
 
@@ -45,6 +46,10 @@ class Frame:
     def get_sub_region_around_specific_point(self, point: Position, width: int, height: int) -> Self:
         region = Region(point.get_x() - width // 2, point.get_y() - height // 2, width, height)
         return self.get_subregion(region)
+
+    def get_average_color_in_frame(self) -> ColorFrameMeter:
+        color_as_tuple = tuple(np.average(self.image_data, axis=(0, 1)))
+        return ColorFrameMeter(color_as_tuple)
 
     def show(self) -> None:
         OpenCVWrapper.show_image(self.image_data)
