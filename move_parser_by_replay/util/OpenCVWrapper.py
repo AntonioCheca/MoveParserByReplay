@@ -44,7 +44,7 @@ class OpenCVWrapper:
     def show_image(image) -> None:
         image_name = "Image"
         cv2.imshow(image_name, image)
-        cv2.moveWindow(image_name, 1000, 800)
+        cv2.moveWindow(image_name, 100, 100)
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
