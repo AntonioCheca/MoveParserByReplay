@@ -1,14 +1,16 @@
 import numpy as np
-import cv2
-from typing import Optional, Self, List
+from typing import Optional, Self, Dict
 
 from move_parser_by_replay.base.Position import Position
 from move_parser_by_replay.base.Region import Region
+from move_parser_by_replay.observers.LikelihoodMapForObservation import LikelihoodMapForObservation
 from move_parser_by_replay.observers.frame_meter.ColorFrameMeter import ColorFrameMeter
+from move_parser_by_replay.observers.frame_meter.StateFrameMeter import StateFrameMeter
 from move_parser_by_replay.util.OpenCVWrapper import OpenCVWrapper
 
 
 class Frame:
+    MINIMAL_PERCENTAGE_OF_PIXELS_TO_ACCOUNT_FOR_FRAME_VALUE = 0
     image_data: np.ndarray
     frame_number: Optional[int]
     height: int
@@ -50,6 +52,22 @@ class Frame:
     def get_average_color_in_frame(self) -> ColorFrameMeter:
         color_as_tuple = tuple(np.average(self.image_data, axis=(0, 1)))
         return ColorFrameMeter(color_as_tuple)
+
+    def get_state_with_more_priority_in_frame(self) -> LikelihoodMapForObservation[StateFrameMeter]:
+        states_detected: Dict[StateFrameMeter, int] = {}
+        for row in self.image_data:
+            for pixel in row:
+                color = ColorFrameMeter(tuple(pixel))
+                state = color.get_potential_state_frame_meter()
+                if state in states_detected:
+                    states_detected[state] += 1
+                else:
+                    states_detected[state] = 1
+
+        likelihood_map = LikelihoodMapForObservation(total_weight=0)
+        for state, count in states_detected.items():
+            likelihood_map.add_observation(state, weight=count)
+        return likelihood_map
 
     def show(self) -> None:
         OpenCVWrapper.show_image(self.image_data)

@@ -21,10 +21,17 @@ class LikelihoodMapForObservation(Generic[T]):
             self.total_weight = 0
             self.unknown_weight = 0
             self.weights_for_observations = {}
-            self.add_observation(default_value)
+            weight = total_weight if total_weight is not None else 1
+            self.add_observation(observation=default_value, weight=weight)
 
     def get_dictionary_of_possibilities(self) -> Dict[Optional[T], int]:
         return self.weights_for_observations
+
+    def get_total_weight(self) -> int:
+        return self.total_weight
+
+    def get_unknown_weight(self) -> int:
+        return self.unknown_weight
 
     def add_observation(self, observation: Optional[T], weight: int = 1) -> None:
         self.total_weight += weight
@@ -67,12 +74,18 @@ class LikelihoodMapForObservation(Generic[T]):
             and self.total_weight == other.total_weight and self.unknown_weight == other.unknown_weight
 
     def __hash__(self) -> int:
+        return hash((str(self), self.total_weight, self.unknown_weight))
+
+    def __repr__(self) -> str:
+        dict_with_keys_str = self.get_dict_keys_as_string()
+
+        return json.dumps(dict_with_keys_str, sort_keys=True)
+
+    def get_dict_keys_as_string(self):
         dict_with_keys_str = {}
         for key in self.weights_for_observations:
             dict_with_keys_str[str(key)] = self.weights_for_observations[key]
-
-        hashed_dict = json.dumps(dict_with_keys_str, sort_keys=True)
-        return hash((hashed_dict, self.total_weight, self.unknown_weight))
+        return dict_with_keys_str
 
     def get_weight_for_specific_value(self, value: T) -> int:
         return self.weights_for_observations[value] if value in self.weights_for_observations else self.unknown_weight
@@ -89,19 +102,20 @@ class LikelihoodMapForObservation(Generic[T]):
 
         return most_likely_value
 
-    def get_best_possibility_according_to_second_map(self, second_map: Self) -> T:
-        most_likely_value = None
-        highest_weight = 0
-
+    def get_merge_map_with_second_map(self, second_map: Self) -> Self:
         all_values = set(self.weights_for_observations.keys()) | set(second_map.weights_for_observations)
 
+        new_map = LikelihoodMapForObservation(total_weight=0)
         for key in all_values:
             weight_for_first_map = self.get_weight_for_specific_value(key)
             weight_for_second_map = second_map.get_weight_for_specific_value(key)
             current_weight = weight_for_first_map * weight_for_second_map
+            new_map.add_observation(key, current_weight)
 
-            if current_weight > highest_weight:
-                highest_weight = current_weight
-                most_likely_value = key
+        new_map.add_observation(None, weight=self.unknown_weight * second_map.get_unknown_weight())
 
-        return most_likely_value
+        return new_map
+
+    def get_best_possibility_according_to_second_map(self, second_map: Self) -> Optional[T]:
+        second_map: LikelihoodMapForObservation[T]
+        return self.get_merge_map_with_second_map(second_map).get_most_likely_possibility()

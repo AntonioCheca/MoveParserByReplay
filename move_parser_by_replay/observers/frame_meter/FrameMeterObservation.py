@@ -3,9 +3,8 @@ from typing import Dict, List, Optional, Self, Callable
 from move_parser_by_replay.base.Frame import Frame
 from move_parser_by_replay.base.Player import Player
 from move_parser_by_replay.base.Position import Position
-from move_parser_by_replay.observers.frame_meter.ColorFrameMeter import ColorFrameMeter
 from move_parser_by_replay.observers.frame_meter.FrameMeterColumn import FrameMeterColumn
-from move_parser_by_replay.observers.frame_meter.StateFrameMeterEnum import StateFrameMeterEnum
+from move_parser_by_replay.observers.frame_meter.StateFrameMeter import StateFrameMeter
 
 
 class FrameMeterObservation:
@@ -24,24 +23,23 @@ class FrameMeterObservation:
         return self.frame_meter
 
     @classmethod
-    def fill_from_frame_and_positions(cls, frame: Frame, positions: Dict[Player, List[Position]],
-                                      frame_meter_in_match: int) -> Self:
-        frame_meter_states: Dict[Player, List[Optional[StateFrameMeterEnum]]] = {}
+    def fill_from_frame_and_positions(cls, frame: Frame, positions: Dict[Player, List[Position]]) -> Self:
+        frame_meter_states: Dict[Player, List[Optional[StateFrameMeter]]] = {}
         for player in positions:
-            list_for_player: List[Optional[StateFrameMeterEnum]] = []
+            list_for_player: List[Optional[StateFrameMeter]] = []
             for position in positions[player]:
                 # raw_color = frame.get_specific_point(position)
-                subregion = frame.get_sub_region_around_specific_point(position, 6, 10)
-                color_in_subregion = subregion.get_average_color_in_frame()
-                list_for_player.append(color_in_subregion.get_potential_state_frame_meter())
+                subregion = frame.get_sub_region_around_specific_point(position, 10, 20)
+                state_in_subregion = subregion.get_state_with_more_priority_in_frame()
+                list_for_player.append(state_in_subregion)
             frame_meter_states[player] = list_for_player
 
         all_columns = []
         for column_position in range(cls.NUMBER_OF_COLUMNS_IN_FRAME_METER):
-            states: List[Optional[StateFrameMeterEnum]] = []
+            states: List[Optional[StateFrameMeter]] = []
             for player in frame_meter_states:
                 states.append(frame_meter_states[player][column_position])
-            new_column = FrameMeterColumn(states[0], states[1], column_position, frame_meter_in_match)
+            new_column = FrameMeterColumn(column_position, states[0], states[1])
             all_columns.append(new_column)
         return cls(all_columns)
 
@@ -52,13 +50,13 @@ class FrameMeterObservation:
         self.clean_continuous_columns_not_following_boolean_function(lambda column: column.is_past())
 
     def clean_all_past_and_nothing_frames(self) -> None:
+        self.frame_meter = [frame_column for frame_column in self.frame_meter if not frame_column.is_past()]
+
         self.clean_continuous_columns_not_following_boolean_function(
             lambda column: column.is_unknown_or_nothing()
         )
 
-        self.frame_meter = [frame_column for frame_column in self.frame_meter if not frame_column.is_past()]
-
-    def move_last_past_frames_to_start(self, frame_meters_in_match: int) -> None:
+    def move_last_past_frames_to_start(self) -> None:
         if len(self.frame_meter) != 0:
             window_to_look_in = self.frame_meter[-self.WINDOW_FOR_PAST_COLUMNS:]
             past_frames_from_tail = []
@@ -73,15 +71,13 @@ class FrameMeterObservation:
             if len(past_frames_from_tail) != 0:
                 past_frames_from_tail.reverse()
                 new_list = past_frames_from_tail
-                for column in new_list:
-                    column.reduce_frame_meter_in_match()
-                new_list.append(FrameMeterColumn.get_end_window_column(frame_meters_in_match))
+                new_list.append(FrameMeterColumn.get_end_window_column())
                 new_list.extend(self.frame_meter)
                 self.frame_meter = new_list
 
-    def add_end_window_if_we_have_enough_states(self, frame_meters_in_match: int) -> None:
+    def add_end_window_if_we_have_enough_states(self) -> None:
         if len(self.frame_meter) > 0.9 * self.NUMBER_OF_COLUMNS_IN_FRAME_METER:
-            self.frame_meter.append(FrameMeterColumn.get_end_window_column(frame_meters_in_match))
+            self.frame_meter.append(FrameMeterColumn.get_end_window_column())
 
     def is_last_column_end_of_window(self) -> bool:
         if len(self.frame_meter) == 0:

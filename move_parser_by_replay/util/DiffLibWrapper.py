@@ -3,6 +3,9 @@ import difflib
 
 
 class DiffLibWrapper:
+    FIRST_LIST_KEY = 'First list'
+    SECOND_LIST_KEY = 'Second list'
+
     @staticmethod
     def get_similarity_ratio_from_two_lists(first_list: List, second_list: List) -> float:
         matches = difflib.SequenceMatcher(None, tuple(first_list), tuple(second_list))

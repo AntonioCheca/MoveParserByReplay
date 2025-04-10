@@ -3,12 +3,11 @@ from typing import List, Dict
 
 from move_parser_by_replay.base.Frame import Frame
 from move_parser_by_replay.base.Video import Video
-from move_parser_by_replay.util.DiffLibWrapper import DiffLibWrapper
 
 
 class AbstractSequentialSearchObserver(ABC):
     DEFAULT_GAP_SIZE = 20
-    FRAMES_TO_REMOVE_FROM_TAIL_FOR_NUMBERS = 3
+    FRAMES_TO_REMOVE_FROM_TAIL_FOR_NUMBERS = 0
 
     gap_size: int
     maximum_frame_to_look_at: int
@@ -65,8 +64,8 @@ class AbstractSequentialSearchObserver(ABC):
         for frame_number in frames_to_look:
             self.apply_observations_in_frame(frame_number)
             # merged_list = self.get_merge_observation_in_two_frames(frame_number - self.gap_size, frame_number)
-            list_to_merge = self.get_exact_list_from_frame(frame_number)[:-self.FRAMES_TO_REMOVE_FROM_TAIL_FOR_NUMBERS]
-            self.exact_final_list[-len(list_to_merge):] = DiffLibWrapper.merge_sequences(
+            list_to_merge = self.get_exact_list_from_frame(frame_number)
+            self.exact_final_list[-len(list_to_merge):] = self.merge_two_sequences(
                 self.exact_final_list[-len(list_to_merge):], list_to_merge)
             self.update_internal_variables_if_needed()
 
@@ -74,6 +73,10 @@ class AbstractSequentialSearchObserver(ABC):
 
     def clean_final_list_if_needed(self) -> None:
         pass
-    
+
     def update_internal_variables_if_needed(self) -> None:
+        pass
+
+    @abstractmethod
+    def merge_two_sequences(self, first_sequence: List, second_sequence: List) -> List:
         pass

@@ -1,40 +1,43 @@
 from typing import Tuple, Self, Dict, Optional
 import numpy as np
 
-from move_parser_by_replay.observers.frame_meter.StateFrameMeterEnum import StateFrameMeterEnum
+from move_parser_by_replay.observers.frame_meter.StateFrameMeter import StateFrameMeter
+from move_parser_by_replay.observers.frame_meter.StateFrameMeterRegistry import StateFrameMeterRegistry
+from move_parser_by_replay.observers.frame_meter.StateType import StateType
+from move_parser_by_replay.observers.frame_meter.TemporalState import TemporalState
 
 
 class ColorFrameMeter:
-    ALL_COLORS: Dict[StateFrameMeterEnum, Tuple[int, int, int]] = {
-        StateFrameMeterEnum.ACTIVE: (99, 21, 189),
-        StateFrameMeterEnum.STARTUP: (148, 203, 12),
-        StateFrameMeterEnum.RECOVERY: (184, 119, 9),
-        StateFrameMeterEnum.FULL_INVULNERABILITY_1: (244, 241, 242),
-        StateFrameMeterEnum.FULL_INVULNERABILITY_2: (197, 194, 195),
-        StateFrameMeterEnum.HIT_STUCK: (55, 255, 252),
+    ALL_COLORS: Dict[StateFrameMeter, Tuple[int, int, int]] = {
+        StateFrameMeterRegistry.get(StateType.ACTIVE, TemporalState.PRESENT): (99, 21, 189),
+        StateFrameMeterRegistry.get(StateType.STARTUP, TemporalState.PRESENT): (148, 203, 12),
+        StateFrameMeterRegistry.get(StateType.RECOVERY, TemporalState.PRESENT): (184, 119, 9),
+        StateFrameMeterRegistry.get(StateType.FULL_INVULNERABILITY_1, TemporalState.PRESENT): (244, 241, 242),
+        StateFrameMeterRegistry.get(StateType.FULL_INVULNERABILITY_2, TemporalState.PRESENT): (197, 194, 195),
+        StateFrameMeterRegistry.get(StateType.HIT_STUCK, TemporalState.PRESENT): (55, 255, 252),
         # StateFrameMeter.NUMBER_OF_FRAMES_1: (33, 32, 19),
-        StateFrameMeterEnum.NUMBER_OF_FRAMES_2: (105, 82, 41),
-        StateFrameMeterEnum.RECOVERY_PAST: (134, 86, 5),
-        StateFrameMeterEnum.ACTIVE_PAST: (73, 12, 136),
-        StateFrameMeterEnum.STARTUP_PAST: (108, 146, 11),
-        StateFrameMeterEnum.JUMP_OR_DASH_PAST: (183, 195, 57),
-        StateFrameMeterEnum.HIT_STUCK_PAST: (37, 192, 185),
-        StateFrameMeterEnum.FULL_INVULNERABILITY_1_PAST: (176, 176, 176),
-        StateFrameMeterEnum.FULL_INVULNERABILITY_2_PAST: (144, 144, 144),
-        StateFrameMeterEnum.NOTHING: (27, 24, 25),
-        StateFrameMeterEnum.NOTHING_PAST: (16, 16, 16),
-        StateFrameMeterEnum.JUMP_OR_DASH: (249, 255, 82),
-        StateFrameMeterEnum.ARMOR_PARRY: (106, 16, 86),
+        StateFrameMeterRegistry.get(StateType.NUMBER_OF_FRAMES_2, TemporalState.PRESENT): (105, 82, 41),
+        StateFrameMeterRegistry.get(StateType.RECOVERY, TemporalState.PAST): (134, 86, 5),
+        StateFrameMeterRegistry.get(StateType.ACTIVE, TemporalState.PAST): (73, 12, 136),
+        StateFrameMeterRegistry.get(StateType.STARTUP, TemporalState.PAST): (108, 146, 11),
+        StateFrameMeterRegistry.get(StateType.JUMP_OR_DASH, TemporalState.PAST): (183, 195, 57),
+        StateFrameMeterRegistry.get(StateType.HIT_STUCK, TemporalState.PAST): (37, 192, 185),
+        StateFrameMeterRegistry.get(StateType.FULL_INVULNERABILITY_1, TemporalState.PAST): (176, 176, 176),
+        StateFrameMeterRegistry.get(StateType.FULL_INVULNERABILITY_2, TemporalState.PAST): (144, 144, 144),
+        StateFrameMeterRegistry.get(StateType.NOTHING, TemporalState.PRESENT): (27, 24, 25),
+        StateFrameMeterRegistry.get(StateType.NOTHING, TemporalState.PAST): (16, 16, 16),
+        StateFrameMeterRegistry.get(StateType.JUMP_OR_DASH, TemporalState.PRESENT): (249, 255, 82),
+        StateFrameMeterRegistry.get(StateType.ARMOR_PARRY, TemporalState.PRESENT): (106, 16, 86),
         # StateFrameMeter.STRIKE_INVULNERABILITY_1: (92, 23, 185),
-        StateFrameMeterEnum.STRIKE_INVULNERABILITY_2: (251, 209, 255),
-        # StateFrameMeter.STRIKE_INVULNERABILITY_1_PAST: (63, 10, 137),
-        StateFrameMeterEnum.STRIKE_INVULNERABILITY_2_PAST: (184, 155, 212),
-        StateFrameMeterEnum.ARMOR_PARRY_PAST: (76, 8, 60),
+        StateFrameMeterRegistry.get(StateType.STRIKE_INVULNERABILITY_2, TemporalState.PRESENT): (251, 209, 255),
+        # StateFrameMeter.STRIKE_INVULNERABILITY_1: (63, 10, 137),
+        StateFrameMeterRegistry.get(StateType.STRIKE_INVULNERABILITY_2, TemporalState.PAST): (184, 155, 212),
+        StateFrameMeterRegistry.get(StateType.ARMOR_PARRY, TemporalState.PAST): (76, 8, 60),
     }
 
     THRESHOLD_FOR_DISTANCE = 200
 
-    _color_cache = {}
+    _color_cache: Dict[Tuple[int, int, int], Optional[StateFrameMeter]] = {}
     _states_array = None
     _colors_array = None
     _initialized = False
@@ -52,7 +55,7 @@ class ColorFrameMeter:
         cls._colors_array = np.array(list(cls.ALL_COLORS.values()))
         cls._initialized = True
 
-    def get_potential_state_frame_meter(self) -> Optional[StateFrameMeterEnum]:
+    def get_potential_state_frame_meter(self) -> Optional[StateFrameMeter]:
         color_key = self.color
         if color_key in self._color_cache:
             return self._color_cache[color_key]

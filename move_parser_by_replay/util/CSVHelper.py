@@ -1,10 +1,12 @@
 import csv
-from typing import List
+from typing import List, Optional
 
 from move_parser_by_replay.base.templates.Button import Button
 from move_parser_by_replay.base.templates.ListOfButtons import ListOfButtons
+from move_parser_by_replay.observers.LikelihoodMapForObservation import LikelihoodMapForObservation
 from move_parser_by_replay.observers.frame_meter.FrameMeterColumn import FrameMeterColumn
-from move_parser_by_replay.observers.frame_meter.StateFrameMeterEnum import StateFrameMeterEnum
+from move_parser_by_replay.observers.frame_meter.StateFrameMeter import StateFrameMeter
+from move_parser_by_replay.observers.frame_meter.StateFrameMeterRegistry import StateFrameMeterRegistry
 from move_parser_by_replay.observers.input_display.InputDisplayObserver import InputDisplayTemplateObserver
 from move_parser_by_replay.observers.input_display.InputDisplayRow import InputDisplayRow
 
@@ -56,8 +58,8 @@ class CSVHelper:
             reader = csv.DictReader(csv_file)
 
             for row in reader:
-                p1_state = StateFrameMeterEnum.from_csv_value(row['P1-State'])
-                p2_state = StateFrameMeterEnum.from_csv_value(row['P2-State'])
+                p1_state = StateFrameMeterRegistry.from_csv_value(row['P1-State'])
+                p2_state = StateFrameMeterRegistry.from_csv_value(row['P2-State'])
                 if p1_state is not None:
                     p1_frames = int(row['P1-Number'])
                     p1_states.append((p1_state, p1_frames))
@@ -71,8 +73,8 @@ class CSVHelper:
         p2_frames_used = 0
 
         while p1_index < len(p1_states) or p2_index < len(p2_states):
-            p1_state = None
-            p2_state = None
+            p1_state: Optional[StateFrameMeter] = None
+            p2_state: Optional[StateFrameMeter] = None
 
             if p1_index < len(p1_states):
                 current_p1_state, total_p1_frames = p1_states[p1_index]
@@ -92,6 +94,8 @@ class CSVHelper:
                     p2_index += 1
                     p2_frames_used = 0
 
-            columns.append(FrameMeterColumn(p1_state, p2_state, 0, 0))
+            p1_likelihood_map = LikelihoodMapForObservation(default_value=p1_state, total_weight=1)
+            p2_likelihood_map = LikelihoodMapForObservation(default_value=p2_state, total_weight=1)
+            columns.append(FrameMeterColumn(0, p1_likelihood_map, p2_likelihood_map))
 
         return columns
