@@ -27,6 +27,9 @@ class StateFrameMeter:
     def is_from_the_past(self) -> bool:
         return self.temporal_state == TemporalState.PAST
 
+    def is_from_the_present(self) -> bool:
+        return self.temporal_state == TemporalState.PRESENT
+
     def cannot_be_followed_by_none(self) -> bool:
         return self.state_type in [StateType.ACTIVE, StateType.STARTUP]
 
@@ -40,10 +43,19 @@ class StateFrameMeter:
             return None
         return StateFrameMeter(self.state_type, TemporalState.PAST)
 
+    def is_it_possible_in_final_list(self) -> bool:
+        if self.temporal_state == TemporalState.PAST:
+            return False
+        if self.state_type in [StateType.NUMBER_OF_FRAMES_1, StateType.NUMBER_OF_FRAMES_2]:
+            return False
+        if self.state_type == StateType.FRAME_METER_END_OF_FULL_WINDOW:
+            return False
+        return True
+
     def __eq__(self, other: Self) -> bool:
         if other is None:
             return False
-        
+
         return self.state_type == other.state_type and self.temporal_state == other.temporal_state
 
     def __hash__(self) -> int:

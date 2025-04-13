@@ -25,6 +25,8 @@ class StateFrameMeterRegistry:
         StateType.FRAME_METER_END_OF_FULL_WINDOW: 11
     }
 
+    CONSTANT_FROM_PRIORITY_TO_WEIGHT = 100
+
     @classmethod
     def initialize(cls):
         for state_type in StateType:
@@ -42,6 +44,10 @@ class StateFrameMeterRegistry:
     @classmethod
     def get_priority(cls, state_type: StateType, temporal_state: TemporalState) -> int:
         return cls.INSTANCES[(state_type, temporal_state)][1]
+
+    @classmethod
+    def get_weight(cls, state_type: StateType, temporal_state: TemporalState) -> int:
+        return cls.CONSTANT_FROM_PRIORITY_TO_WEIGHT // cls.INSTANCES[(state_type, temporal_state)][1]
 
     @classmethod
     def from_csv_value(cls, csv_value: str) -> Optional[StateFrameMeter]:

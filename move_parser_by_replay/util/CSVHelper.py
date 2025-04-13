@@ -3,7 +3,6 @@ from typing import List, Optional
 
 from move_parser_by_replay.base.templates.Button import Button
 from move_parser_by_replay.base.templates.ListOfButtons import ListOfButtons
-from move_parser_by_replay.observers.LikelihoodMapForObservation import LikelihoodMapForObservation
 from move_parser_by_replay.observers.frame_meter.FrameMeterColumn import FrameMeterColumn
 from move_parser_by_replay.observers.frame_meter.StateFrameMeter import StateFrameMeter
 from move_parser_by_replay.observers.frame_meter.StateFrameMeterRegistry import StateFrameMeterRegistry
@@ -94,8 +93,6 @@ class CSVHelper:
                     p2_index += 1
                     p2_frames_used = 0
 
-            p1_likelihood_map = LikelihoodMapForObservation(default_value=p1_state, total_weight=1)
-            p2_likelihood_map = LikelihoodMapForObservation(default_value=p2_state, total_weight=1)
-            columns.append(FrameMeterColumn(0, p1_likelihood_map, p2_likelihood_map))
+            columns.append(FrameMeterColumn(0, p1_state, p2_state))
 
         return columns

@@ -41,9 +41,9 @@ class InputDisplayObservationRow:
             direction_pressed_equal_probability
 
     def get_best_possibility(self) -> InputDisplayRow:
-        best_frames = self.frames_pressed_observed.get_most_likely_possibility()
-        best_buttons = self.buttons_pressed_observed.get_most_likely_possibility()
-        best_direction = self.direction_pressed_observed.get_most_likely_possibility()
+        best_frames = self.frames_pressed_observed.get_known_most_likely_possibility()
+        best_buttons = self.buttons_pressed_observed.get_known_most_likely_possibility()
+        best_direction = self.direction_pressed_observed.get_known_most_likely_possibility()
 
         return InputDisplayRow(best_direction, best_buttons, best_frames)
 
@@ -77,5 +77,5 @@ class InputDisplayObservationRow:
                      self.is_empty))
 
     def is_likely_empty(self) -> bool:
-        return self.frames_pressed_observed.get_most_likely_possibility() is None and \
-            self.direction_pressed_observed.get_most_likely_possibility() is None
+        return self.frames_pressed_observed.get_known_most_likely_possibility() is None and \
+            self.direction_pressed_observed.get_known_most_likely_possibility() is None

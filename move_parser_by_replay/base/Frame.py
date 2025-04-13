@@ -6,6 +6,7 @@ from move_parser_by_replay.base.Region import Region
 from move_parser_by_replay.observers.LikelihoodMapForObservation import LikelihoodMapForObservation
 from move_parser_by_replay.observers.frame_meter.ColorFrameMeter import ColorFrameMeter
 from move_parser_by_replay.observers.frame_meter.StateFrameMeter import StateFrameMeter
+from move_parser_by_replay.observers.frame_meter.StateFrameMeterRegistry import StateFrameMeterRegistry
 from move_parser_by_replay.util.OpenCVWrapper import OpenCVWrapper
 
 
@@ -53,20 +54,27 @@ class Frame:
         color_as_tuple = tuple(np.average(self.image_data, axis=(0, 1)))
         return ColorFrameMeter(color_as_tuple)
 
-    def get_state_with_more_priority_in_frame(self) -> LikelihoodMapForObservation[StateFrameMeter]:
+    def get_map_of_states_in_frame(self) -> LikelihoodMapForObservation[StateFrameMeter]:
         states_detected: Dict[StateFrameMeter, int] = {}
         for row in self.image_data:
             for pixel in row:
                 color = ColorFrameMeter(tuple(pixel))
                 state = color.get_potential_state_frame_meter()
-                if state in states_detected:
-                    states_detected[state] += 1
+                if state is None:
+                    weight_of_observation = 1
                 else:
-                    states_detected[state] = 1
+                    weight_of_observation = StateFrameMeterRegistry.get_weight(state.get_state_type(),
+                                                                               state.get_temporal_state())
+                if state in states_detected:
+                    states_detected[state] += weight_of_observation
+                else:
+                    states_detected[state] = weight_of_observation
 
         likelihood_map = LikelihoodMapForObservation(total_weight=0)
         for state, count in states_detected.items():
             likelihood_map.add_observation(state, weight=count)
+        if likelihood_map.get_total_weight() == 0:
+            likelihood_map.add_observation(None, 1)
         return likelihood_map
 
     def show(self) -> None:
