@@ -90,7 +90,7 @@ class LikelihoodMapForObservation(Generic[T]):
     def get_weight_for_specific_value(self, value: T) -> int:
         return self.weights_for_observations[value] if value in self.weights_for_observations else self.unknown_weight
 
-    def get_most_likely_possibility(self) -> Optional[T]:
+    def get_known_most_likely_possibility(self) -> Optional[T]:
         most_likely_value = None
         highest_value = 0
 
@@ -99,6 +99,21 @@ class LikelihoodMapForObservation(Generic[T]):
             if current_value > highest_value:
                 highest_value = current_value
                 most_likely_value = key
+
+        return most_likely_value
+
+    def get_most_likely_possibility_possibly_none(self) -> Optional[T]:
+        most_likely_value = None
+        highest_value = 0
+
+        for key in self.weights_for_observations:
+            current_value = self.weights_for_observations[key]
+            if current_value > highest_value:
+                highest_value = current_value
+                most_likely_value = key
+
+        if self.unknown_weight > highest_value:
+            return None
 
         return most_likely_value
 
@@ -114,8 +129,14 @@ class LikelihoodMapForObservation(Generic[T]):
 
         new_map.add_observation(None, weight=self.unknown_weight * second_map.get_unknown_weight())
 
+        if new_map.get_total_weight() == 0:
+            new_map.add_observation(None, 1)
+
         return new_map
 
     def get_best_possibility_according_to_second_map(self, second_map: Self) -> Optional[T]:
         second_map: LikelihoodMapForObservation[T]
-        return self.get_merge_map_with_second_map(second_map).get_most_likely_possibility()
+        return self.get_merge_map_with_second_map(second_map).get_known_most_likely_possibility()
+
+    def replace_weight_in_value_for_uncertainty(self, value_to_remove: T) -> None:
+        self.unknown_weight += self.weights_for_observations.pop(value_to_remove)
