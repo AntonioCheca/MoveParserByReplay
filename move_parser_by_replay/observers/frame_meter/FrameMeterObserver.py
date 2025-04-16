@@ -82,23 +82,29 @@ class FrameMeterObserver(AbstractSequentialSearchObserver):
             self.clean_final_list_if_needed_for_player(player)
 
     def merge_two_sequences(self, first_sequence: List[FrameMeterColumnMap],
-                            second_sequence: List[FrameMeterColumnMap], last_change_in_frames: int) -> \
+                            second_sequence: List[FrameMeterColumnMap], last_change_in_frames: int,
+                            is_new_sequence: bool) -> \
             List[FrameMeterColumnMap]:
         if len(first_sequence) == 0:
             return second_sequence
         if len(second_sequence) == 0:
             return first_sequence
         if last_change_in_frames > self.THRESHOLD_LAST_FRAMES_CHANGED_FOR_ACTUAL_MERGE:
-            return first_sequence + second_sequence
+            if is_new_sequence:
+                return first_sequence + second_sequence
+            else:
+                return first_sequence
 
         new_list: List[FrameMeterColumnMap] = []
 
-        start_overlap_position = self.calculate_start_overlap_position(first_sequence, second_sequence)
+        start_overlap_index = self.calculate_start_overlap_index(first_sequence, second_sequence)
+
+        if start_overlap_index == -1:
+            return first_sequence + second_sequence
 
         first_index = 0
 
-        while first_index < len(first_sequence) and \
-                first_sequence[first_index].get_column_position() < start_overlap_position:
+        while first_index < len(first_sequence) and first_index < start_overlap_index:
             new_list.append(first_sequence[first_index])
             first_index += 1
 
@@ -131,15 +137,16 @@ class FrameMeterObserver(AbstractSequentialSearchObserver):
         return new_list
 
     @staticmethod
-    def calculate_start_overlap_position(first_sequence: List[FrameMeterColumnMap],
-                                         second_sequence: List[FrameMeterColumnMap]) -> int:
+    def calculate_start_overlap_index(first_sequence: List[FrameMeterColumnMap],
+                                      second_sequence: List[FrameMeterColumnMap]) -> int:
         first_sequence_positions = [column.get_column_position() for column in first_sequence]
         start_column_position = second_sequence[0].get_column_position()
         potential_overlap_indices = [i for i, pos in enumerate(first_sequence_positions) if
                                      pos == start_column_position]
-
-        if len(potential_overlap_indices) <= 1:
-            return start_column_position
+        if len(potential_overlap_indices) == 0:
+            return -1
+        if len(potential_overlap_indices) == 1:
+            return potential_overlap_indices[0]
 
         overlap_ranges = []
 

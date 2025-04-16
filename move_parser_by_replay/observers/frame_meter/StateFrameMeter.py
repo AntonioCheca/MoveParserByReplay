@@ -30,6 +30,9 @@ class StateFrameMeter:
     def is_from_the_present(self) -> bool:
         return self.temporal_state == TemporalState.PRESENT
 
+    def is_nothing(self) -> bool:
+        return self.state_type == StateType.NOTHING
+
     def cannot_be_followed_by_none(self) -> bool:
         return self.state_type in [StateType.ACTIVE, StateType.STARTUP]
 
