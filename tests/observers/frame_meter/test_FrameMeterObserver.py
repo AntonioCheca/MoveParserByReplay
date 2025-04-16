@@ -3,7 +3,6 @@ from typing import List
 from move_parser_by_replay.base.Player import Player
 from move_parser_by_replay.base.Video import Video
 from move_parser_by_replay.observers.frame_meter.FrameMeterColumn import FrameMeterColumn
-from move_parser_by_replay.observers.frame_meter.FrameMeterColumnMap import FrameMeterColumnMap
 from move_parser_by_replay.observers.frame_meter.FrameMeterObserver import FrameMeterObserver
 from move_parser_by_replay.util.CSVHelper import CSVHelper
 from move_parser_by_replay.util.DiffLibWrapper import DiffLibWrapper

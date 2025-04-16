@@ -63,12 +63,16 @@ class AbstractSequentialSearchObserver(ABC):
 
         last_frame_changed = 0
         for frame_number in frames_to_look:
+            is_first_column_from_list_to_merge_0 = False
             self.apply_observations_in_frame(frame_number)
             # merged_list = self.get_merge_observation_in_two_frames(frame_number - self.gap_size, frame_number)
             list_to_merge = self.get_exact_list_from_frame(frame_number)
             previous_length = len(self.exact_final_list)
+            if len(list_to_merge) > 0:
+                is_first_column_from_list_to_merge_0 = list_to_merge[0].get_column_position() == 0
             self.exact_final_list[-len(list_to_merge):] = self.merge_two_sequences(
-                self.exact_final_list[-len(list_to_merge):], list_to_merge, frame_number - last_frame_changed)
+                self.exact_final_list[-len(list_to_merge):], list_to_merge, frame_number - last_frame_changed,
+                is_first_column_from_list_to_merge_0)
             self.update_internal_variables_if_needed()
             if previous_length != len(self.exact_final_list):
                 last_frame_changed = frame_number
@@ -82,5 +86,6 @@ class AbstractSequentialSearchObserver(ABC):
         pass
 
     @abstractmethod
-    def merge_two_sequences(self, first_sequence: List, second_sequence: List, last_change_in_frames: int) -> List:
+    def merge_two_sequences(self, first_sequence: List, second_sequence: List, last_change_in_frames: int,
+                            is_new_sequence: bool) -> List:
         pass

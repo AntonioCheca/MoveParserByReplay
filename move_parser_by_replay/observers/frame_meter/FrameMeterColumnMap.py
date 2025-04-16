@@ -18,6 +18,8 @@ class FrameMeterColumnMap:
     THRESHOLD_UNKNOWN_PROBABILITY = 0.5
     THRESHOLD_END_WINDOW_PROBABILITY = 0.5
 
+    PROBABILITY_NOTHING_CONFUSES_PAST_PRESENT = 1 / 80  # The "index" rectangle appears differently
+
     p1_state: LikelihoodMapForObservation[StateFrameMeter]
     p2_state: LikelihoodMapForObservation[StateFrameMeter]
     column_position: int
@@ -45,25 +47,31 @@ class FrameMeterColumnMap:
         p2_present_probability = self.get_probability_of_a_state_being_present(self.p2_state)
         return p1_present_probability * p2_present_probability
 
-    @staticmethod
-    def get_probability_of_a_state_being_past(state: LikelihoodMapForObservation[StateFrameMeter]):
+    @classmethod
+    def get_probability_of_a_state_being_past(cls, state: LikelihoodMapForObservation[StateFrameMeter]) -> float:
         dictionary_of_possibilities = state.get_dictionary_of_possibilities()
         is_past_weight = state.get_unknown_weight()
         for possibility in dictionary_of_possibilities:
             if possibility.is_from_the_past():
                 is_past_weight += dictionary_of_possibilities[possibility]
-        final_weight = is_past_weight / state.get_total_weight()
-        return final_weight
+            elif possibility.is_nothing():
+                is_past_weight += dictionary_of_possibilities[possibility] \
+                                  * cls.PROBABILITY_NOTHING_CONFUSES_PAST_PRESENT
+        probability = is_past_weight / state.get_total_weight()
+        return probability
 
-    @staticmethod
-    def get_probability_of_a_state_being_present(state: LikelihoodMapForObservation[StateFrameMeter]):
+    @classmethod
+    def get_probability_of_a_state_being_present(cls, state: LikelihoodMapForObservation[StateFrameMeter]) -> float:
         dictionary_of_possibilities = state.get_dictionary_of_possibilities()
-        is_past_weight = state.get_unknown_weight()
+        is_present_weight = state.get_unknown_weight()
         for possibility in dictionary_of_possibilities:
             if possibility.is_from_the_present():
-                is_past_weight += dictionary_of_possibilities[possibility]
-        final_weight = is_past_weight / state.get_total_weight()
-        return final_weight
+                is_present_weight += dictionary_of_possibilities[possibility]
+            elif possibility.is_nothing():
+                is_present_weight += dictionary_of_possibilities[possibility] \
+                                     * cls.PROBABILITY_NOTHING_CONFUSES_PAST_PRESENT
+        probability = is_present_weight / state.get_total_weight()
+        return probability
 
     def is_unknown_or_nothing(self) -> bool:
         return self.probability_is_unknown_or_nothing() >= self.THRESHOLD_UNKNOWN_PROBABILITY
