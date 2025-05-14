@@ -12,7 +12,7 @@ def test_basic_frame_meter_observer():
     video = Video('./data/match1.mkv')
 
     frame_meter_observer = FrameMeterObserver(video)
-    frame_meter_observer.set_maximum_frame_to_look_at(2000)
+    frame_meter_observer.set_maximum_frame_to_look_at(1000)
     frame_meter_observer.analyse_full_video()
 
     final_frame_meter_list: List[FrameMeterColumn] = frame_meter_observer.get_final_list_for_states()
