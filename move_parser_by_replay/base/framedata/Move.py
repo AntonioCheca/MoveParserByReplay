@@ -73,3 +73,12 @@ class Move:
 
     def get_cancellable_into(self) -> List[str]:
         return self.cancellable_into
+
+    def get_list_of_state_type_frame_meter(self) -> List[int]:
+        return [self.startup_frames - 1, self.active_frames, self.recovery_frames]
+
+    def __str__(self) -> str:
+        return self.move_name
+
+    def __repr__(self) -> str:
+        return str(self)

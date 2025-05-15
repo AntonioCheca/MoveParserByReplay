@@ -1,4 +1,4 @@
-from typing import List, Dict, Optional, Any
+from typing import Dict, Optional, Any
 import json
 
 from move_parser_by_replay.base.Character import Character
@@ -10,15 +10,15 @@ from move_parser_by_replay.base.framedata.MoveType import MoveType
 
 class FrameDataReaderFromJson:
     @staticmethod
-    def read_json(json_file_path: str) -> List[Character]:
+    def read_json(json_file_path: str) -> Dict[str, Character]:
         try:
             with open(json_file_path, 'r') as file:
                 data = json.load(file)
         except (json.JSONDecodeError, FileNotFoundError) as e:
             print(f"Error reading JSON file: {e}")
-            return []
+            return {}
 
-        characters = []
+        characters = {}
 
         for character_name, character_data in data.items():
             character = Character(character_name)
@@ -37,7 +37,7 @@ class FrameDataReaderFromJson:
                     if move:
                         character.moves[move_name] = move
 
-            characters.append(character)
+            characters[character_name] = character
 
         return characters
 
