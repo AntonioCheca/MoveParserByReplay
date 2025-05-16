@@ -5,6 +5,9 @@ Project to get a list of interactions in a Street Fighter 6 game just from the R
 It assumes the replay comes with Frame Meter and Input Display on for both players, and for now, at 0.5x speed so the
 Observers have more data
 
+Frame data information to disambiguate moves in the Replay comes from the people at FAT Frame
+Data https://github.com/D4RKONION/FAT
+
 ## Features
 
 - Parse Street Fighter 6 replays with input display and frame meter
